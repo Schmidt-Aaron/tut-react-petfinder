@@ -9,19 +9,58 @@ const petfinder = pf({
 });
 
 class App extends React.Component {
-  componentDidMount() {
-    const petList = petfinder.breed.list({ animal: "dog" });
+  constructor(props) {
+    super(props);
 
-    petList.then(console.log, console.error);
+    this.state = {
+      pets: []
+    };
+  }
+  componentDidMount() {
+    petfinder.pet
+      .find({ output: "full", location: "Seattle, WA" })
+      .then(data => {
+        let pets;
+
+        if (data.petfinder.pets && data.petfinder.pets.pet) {
+          if (Array.isArray(data.petfinder.pets.pet)) {
+            pets = data.petfinder.pets.pet;
+          } else {
+            pets = [data.petfinder.pets.pet];
+          }
+        } else {
+          pets = [];
+        }
+
+        this.setState({
+          pets
+        });
+      });
   }
 
   render() {
     return (
       <div>
         <h1>Adopt Me Please!</h1>
-        <Pet name="Snoopy" animal="dog" breed="terrier" />
-        <Pet name="Luna" animal="bird" breed="sparrow" />
-        <Pet name="Doink" animal="cat" breed="mixed" />
+        <div>
+          {this.state.pets.map(pet => {
+            let breed;
+
+            if (Array.isArray(pet.breeds.breed)) {
+              breed = pet.breeds.breed.join(", ");
+            } else {
+              breed = pet.breeds.breed;
+            }
+            return (
+              <Pet
+                key={pet.id}
+                animal={pet.animal}
+                name={pet.name}
+                breed={breed}
+              />
+            );
+          })}
+        </div>
       </div>
     );
   }
