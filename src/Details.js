@@ -45,7 +45,7 @@ class Details extends React.Component {
           loading: false
         });
       })
-
+      /* eslint-disable-next-line */
       .catch(err => {
         navigate("/");
       });
