@@ -5,8 +5,8 @@ import breed from "./breed";
 import breeds from "./breeds";
 
 export default combineReducers({
-  location
-  animal
-  breed
+  location,
+  animal,
+  breed,
   breeds
 });
