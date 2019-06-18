@@ -1,3 +1,4 @@
+/* tslint:disable no-empty */
 import React from "react";
 
 const SearchContext = React.createContext({
@@ -5,9 +6,9 @@ const SearchContext = React.createContext({
   animal: "",
   breed: "",
   breeds: [],
-  handleAnimalChange() {},
-  handleBreedChange() {},
-  handleLocationChange() {},
+  handleAnimalChange(event: React.KeyboardEvent<HTMLInputElement>) {},
+  handleBreedChange(event: React.ChangeEvent<HTMLSelectElement>) {},
+  handleLocationChange(event: React.KeyboardEvent<HTMLInputElement>) {},
   getBreeds() {}
 });
 
