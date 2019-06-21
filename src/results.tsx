@@ -1,6 +1,6 @@
 import React from "react";
 import pf, { Pet as PetType } from "petfinder-client";
-import { RouteComponentType, RouteComponentProps } from "@reach/router";
+import { RouteComponentProps } from "@reach/router";
 import Pet from "./Pet";
 import { Consumer } from "./SearchContext";
 import SearchBox from "./Searchbox";
@@ -26,8 +26,8 @@ interface State {
   pets: PetType[];
 }
 
-class Results extends React.Component<Props, State> {
-  constructor(props) {
+class Results extends React.Component<Props & RouteComponentProps, State> {
+  constructor(props: Props) {
     super(props);
 
     this.state = {

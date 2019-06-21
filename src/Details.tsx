@@ -16,7 +16,7 @@ const petfinder = pf({
 class Details extends React.Component<RouteComponentProps<{ id: string }>> {
   public state = {
     loading: true,
-    showModal: true,
+    showModal: false,
     name: "",
     animal: "",
     location: "",
@@ -24,16 +24,8 @@ class Details extends React.Component<RouteComponentProps<{ id: string }>> {
     media: {} as PetMedia,
     breed: ""
   };
-
-  public toggleModal = () => {
-    this.setState({
-      showModal: !this.state.showModal
-    });
-  };
-
   public componentDidMount() {
     if (!this.props.id) {
-      navigate("/");
       return;
     }
     petfinder.pet
@@ -42,68 +34,163 @@ class Details extends React.Component<RouteComponentProps<{ id: string }>> {
         id: this.props.id
       })
       .then((data: PetResponse) => {
-        if (data.petfinder.pet) {
+        if (!data.petfinder.pet) {
+          navigate("/");
           return;
         }
-        const pet = data.petfinder.pet;
         let breed;
-        if (Array.isArray(pet.breeds.breed)) {
-          breed = pet.breeds.breed.join(", ");
+        if (Array.isArray(data.petfinder.pet.breeds.breed)) {
+          breed = data.petfinder.pet.breeds.breed.join(", ");
         } else {
-          breed = pet.breeds.breed;
+          breed = data.petfinder.pet.breeds.breed;
         }
-
         this.setState({
-          name: pet.name,
-          animal: pet.animal,
-          location: `${pet.contact.city}, ${pet.contact.state}`,
-          description: pet.description,
-          media: pet.media,
+          name: data.petfinder.pet.name,
+          animal: data.petfinder.pet.animal,
+          location: `${data.petfinder.pet.contact.city}, ${
+            data.petfinder.pet.contact.state
+          }`,
+          description: data.petfinder.pet.description,
+          media: data.petfinder.pet.media,
           breed,
           loading: false
         });
       })
-
-      .catch(err => {
-        navigate("/");
-      });
+      .catch((err: Error) => this.setState({ error: err }));
   }
-
+  public toggleModal = () =>
+    this.setState({ showModal: !this.state.showModal });
   public render() {
     if (this.state.loading) {
-      return <h1>loading ...</h1>;
+      return <h1>loading … </h1>;
     }
+
     const {
-      name,
+      media,
       animal,
       breed,
       location,
       description,
-      media,
+      name,
       showModal
     } = this.state;
 
     return (
       <div className="details">
         <Carousel media={media} />
-        <h1>{name}</h1>
-        <h2>
-          {animal} - {breed} - {location}
-        </h2>
-        <button onClick={this.toggleModal}>Adopt {name}</button>
-        <p>{description}</p>
-        {showModal ? (
-          <Modal>
-            <h1>Would you like to adopt me?</h1>
-            <div className="buttons">
-              <button onClick={this.toggleModal}>Yes</button>
-              <button onClick={this.toggleModal}>Hell yes!</button>
-            </div>
-          </Modal>
-        ) : null}
+        <div>
+          <h1>{name}</h1>
+          <h2>{`${animal} — ${breed} — ${location}`}</h2>
+          <button onClick={this.toggleModal}>Adopt {name}</button>
+          <p>{description}</p>
+          {showModal ? (
+            <Modal>
+              <h1>Would you like to adopt {name}?</h1>
+              <div className="buttons">
+                <button onClick={this.toggleModal}>Yes</button>
+                <button onClick={this.toggleModal}>No</button>
+              </div>
+            </Modal>
+          ) : null}
+        </div>
       </div>
     );
   }
 }
 
 export default Details;
+
+// class Details extends React.Component<RouteComponentProps<{ id: string }>> {
+//   public state = {
+//     loading: true,
+//     showModal: true,
+//     name: "",
+//     animal: "",
+//     location: "",
+//     description: "",
+//     media: {} as PetMedia,
+//     breed: ""
+//   };
+
+//   public toggleModal = () => {
+//     this.setState({
+//       showModal: !this.state.showModal
+//     });
+//   };
+
+//   public componentDidMount() {
+//     if (!this.props.id) {
+//       navigate("/");
+//       return;
+//     }
+//     petfinder.pet
+//       .get({
+//         output: "full",
+//         id: this.props.id
+//       })
+//       .then((data: PetResponse) => {
+//         if (data.petfinder.pet) {
+//           return;
+//         }
+//         const pet = data.petfinder.pet;
+//         let breed;
+//         if (Array.isArray(pet.breeds.breed)) {
+//           breed = pet.breeds.breed.join(", ");
+//         } else {
+//           breed = pet.breeds.breed;
+//         }
+
+//         this.setState({
+//           name: pet.name,
+//           animal: pet.animal,
+//           location: `${pet.contact.city}, ${pet.contact.state}`,
+//           description: pet.description,
+//           media: pet.media,
+//           breed,
+//           loading: false
+//         });
+//       })
+
+//       .catch(err => {
+//         navigate("/");
+//       });
+//   }
+
+//   public render() {
+//     if (this.state.loading) {
+//       return <h1>loading ...</h1>;
+//     }
+//     const {
+//       name,
+//       animal,
+//       breed,
+//       location,
+//       description,
+//       media,
+//       showModal
+//     } = this.state;
+
+//     return (
+//       <div className="details">
+//         <Carousel media={media} />
+//         <h1>{name}</h1>
+//         <h2>
+//           {animal} - {breed} - {location}
+//         </h2>
+//         <button onClick={this.toggleModal}>Adopt {name}</button>
+//         <p>{description}</p>
+//         {showModal ? (
+//           <Modal>
+//             <h1>Would you like to adopt me?</h1>
+//             <div className="buttons">
+//               <button onClick={this.toggleModal}>Yes</button>
+//               <button onClick={this.toggleModal}>Hell yes!</button>
+//             </div>
+//           </Modal>
+//         ) : null}
+//       </div>
+//     );
+//   }
+// }
+
+// export default Details;
